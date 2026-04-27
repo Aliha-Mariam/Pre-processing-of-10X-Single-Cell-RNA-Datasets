@@ -12,8 +12,6 @@
 
 ---
 
----
-
 ## 📖 Introduction
 
 Single-cell RNA sequencing (scRNA-seq) is a powerful technique that enables the study of gene expression at the resolution of individual cells. Unlike bulk RNA sequencing, which provides an average expression profile across a population of cells, scRNA-seq captures cellular heterogeneity and allows the identification of distinct cell types and states within complex biological systems.
@@ -202,19 +200,6 @@ UMI count distribution across gene expression matrix highlighting sparsity typic
 
 <img width="258" height="208" alt="dropletutils plot" src="https://github.com/user-attachments/assets/81c88431-daa9-4c6b-9042-ce42babb9482" />
 DropletUtils filtering output showing separation of high-quality cells from empty droplets using knee-based thresholding.
-
----
-
-## 🔹 Data Structure Overview
-
-The relationship between barcodes, genes, and UMI counts confirms successful preprocessing and data integrity.
-
-<img width="1600" height="800" alt="table_scatter_plot" src="https://github.com/user-attachments/assets/68bbb52d-2c05-4205-9287-975858b30b46" />
-
-Scatter-based summary showing relationship between genes, barcodes, and UMI counts across the dataset.
-
----
-
 
 ---
 
