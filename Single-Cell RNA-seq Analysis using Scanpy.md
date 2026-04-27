@@ -1,8 +1,7 @@
 # 🧬 Single-Cell RNA-seq Analysis using Scanpy
 
----
 
-# 📌 Project Overview
+#  Project Overview
 
 This project demonstrates a **complete single-cell RNA sequencing (scRNA-seq) analysis pipeline** using Scanpy.
 
@@ -36,8 +35,6 @@ pip install scanpy anndata scrublet leidenalg celltypist decoupler omnipath
 ---
 
 # 📥 Data Loading
-
-## 🔹 Explanation
 
 The dataset is downloaded and stored using **pooch**, then loaded into an **AnnData object**, which is the main data structure used in Scanpy.
 
@@ -78,8 +75,6 @@ adata.obs_names_make_unique()
 
 # 🧪 Quality Control (QC)
 
-## 🔹 Explanation
-
 Quality control ensures removal of **low-quality or damaged cells**.
 
 ### Metrics Used:
@@ -95,36 +90,21 @@ adata.var["mt"] = adata.var_names.str.startswith("MT-")
 adata.var["ribo"] = adata.var_names.str.startswith(("RPS", "RPL"))
 adata.var["hb"] = adata.var_names.str.contains("^HB[^(P)]")
 
-sc.pp.calculate_qc_metrics(adata, qc_vars=["mt", "ribo", "hb"], inplace=True)
+sc.pp.calculate_qc_metrics(adata, qc_vars=["mt", "ribo", "hb"], inplace=True, log1p=True)
+sc.pl.violin(adata, ["n_genes_by_counts", "total_counts", "pct_counts_mt"], jitter=0.4, multi_panel=True)
 ```
+---
+<img width="1502" height="476" alt="pct" src="https://github.com/user-attachments/assets/3c2a622d-eb5d-4fc6-ab42-0efba4a22fcf" />
 
-## 📊 Add Figures (IMPORTANT)
 
 ```python
-sc.pl.violin(adata,
-             ["n_genes_by_counts", "total_counts", "pct_counts_mt"],
-             save="_qc_violin.png")
-
-sc.pl.scatter(adata,
-              "total_counts",
-              "n_genes_by_counts",
-              color="pct_counts_mt",
-              save="_qc_scatter.png")
+sc.pl.scatter(adata, "total_counts", "n_genes_by_counts", color="pct_counts_mt")
 ```
-
-### 👉 Add in README:
-
-```
-## 📊 Quality Control Plots
-![QC Violin](figures/qc_violin.png)
-![QC Scatter](figures/qc_scatter.png)
-```
+<img width="428" height="401" alt="pct2" src="https://github.com/user-attachments/assets/f84bf9cb-1e99-4117-9d30-d9b0df5adbc6" />
 
 ---
 
 # 🔍 Filtering
-
-## 🔹 Explanation
 
 Removes:
 
@@ -141,8 +121,6 @@ sc.pp.filter_genes(adata, min_cells=3)
 ---
 
 # ⚠️ Doublet Detection
-
-## 🔹 Explanation
 
 Doublets = two cells captured as one → leads to incorrect clustering.
 
@@ -162,8 +140,6 @@ adata = adata[~adata.obs["predicted_doublet"]].copy()
 
 # 📊 Normalization
 
-## 🔹 Explanation
-
 * Normalizes sequencing depth across cells
 * Applies log transformation to stabilize variance
 
@@ -180,8 +156,6 @@ sc.pp.log1p(adata)
 
 # 🎯 Feature Selection
 
-## 🔹 Explanation
-
 Selects **highly variable genes (HVGs)** → most informative genes
 
 ## 🔹 Code
@@ -192,13 +166,12 @@ sc.pp.highly_variable_genes(
     n_top_genes=2000,
     batch_key="sample"
 )
+sc.pl.highly_variable_genes(adata)
 ```
-
+<img width="725" height="377" alt="pct 3" src="https://github.com/user-attachments/assets/c586d4b5-bd7f-40e3-955b-7988cb929a41" />
 ---
 
 # 📉 Dimensionality Reduction (PCA)
-
-## 🔹 Explanation
 
 Reduces high-dimensional gene space into principal components.
 
@@ -211,19 +184,11 @@ sc.pl.pca_variance_ratio(adata,
                          log=True,
                          save="_pca_variance.png")
 ```
-
-## 📊 Add Figure
-
-```
-## 📊 PCA Variance
-![PCA](figures/pca_variance.png)
-```
+<img width="374" height="404" alt="pct 4" src="https://github.com/user-attachments/assets/cf543132-1c01-41bf-ada7-58afff295ae9" />
 
 ---
 
 # 🌐 UMAP Visualization
-
-## 🔹 Explanation
 
 UMAP projects cells into 2D space preserving structure.
 
@@ -237,19 +202,12 @@ sc.pl.umap(adata,
            color="sample",
            save="_umap_sample.png")
 ```
+<img width="444" height="376" alt="umap" src="https://github.com/user-attachments/assets/7eb891b6-454f-4122-a2f7-2e6501abc792" />
 
-## 📊 Add Figure
-
-```
-## 🌐 UMAP Visualization
-![UMAP](figures/umap_sample.png)
-```
 
 ---
 
 # 🔗 Clustering (Leiden)
-
-## 🔹 Explanation
 
 Groups cells into clusters based on similarity.
 
@@ -262,13 +220,7 @@ sc.pl.umap(adata,
            color="leiden",
            save="_umap_clusters.png")
 ```
-
-## 📊 Add Figure
-
-```
-## 🔗 Clustering
-![Clusters](figures/umap_clusters.png)
-```
+<img width="498" height="379" alt="clustering" src="https://github.com/user-attachments/assets/c9ada67a-e0d1-44b3-a88a-1af28ef84da0" />
 
 ---
 
@@ -278,28 +230,43 @@ sc.pl.umap(adata,
 
 ## 🔹 1. Marker-Based Annotation
 
-### Explanation
-
 Uses known gene markers to identify cell types.
 
 ```python
 marker_genes = {
-    "B cells": ["MS4A1"],
-    "T cells": ["CD4", "CD8A"],
-    "NK cells": ["GNLY", "NKG7"],
-}
+    "CD14+ Mono": ["FCN1", "CD14"],
+    "CD16+ Mono": ["TCF7L2", "FCGR3A", "LYN"],
+    # Note: DMXL2 should be negative
+    "cDC2": ["CST3", "COTL1", "LYZ", "DMXL2", "CLEC10A", "FCER1A"],
+    "Erythroblast": ["MKI67", "HBA1", "HBB"],
+    # Note HBM and GYPA are negative markers
+    "Proerythroblast": ["CDK6", "SYNGR1", "HBM", "GYPA"],
+    "NK": ["GNLY", "NKG7", "CD247", "FCER1G", "TYROBP", "KLRG1", "FCGR3A"],
+    "ILC": ["ID2", "PLCG2", "GNLY", "SYNE1"],
+    "Naive CD20+ B": ["MS4A1", "IL4R", "IGHD", "FCRL1", "IGHM"],
+    # Note IGHD and IGHM are negative markers
+    "B cells": ["MS4A1", "ITGB1", "COL4A4", "PRDM1", "IRF4", "PAX5", "BCL11A", "BLK", "IGHD", "IGHM"],
+    "Plasma cells": ["MZB1", "HSP90B1", "FNDC3B", "PRDM1", "IGKC", "JCHAIN"],
+    "Plasmablast": ["XBP1", "PRDM1", "PAX5"],  # Note PAX5 is a negative marker
+    "CD4+ T": ["CD4", "IL7R", "TRBC2"],
+    "CD8+ T": ["CD8A", "CD8B", "GZMK", "GZMA", "CCL5", "GZMB", "GZMH", "GZMA"],
+    "T naive": ["LEF1", "CCR7", "TCF7"],
+    "pDC": ["GZMB", "IL3RA", "COBLL1", "TCF4"],
 
-sc.pl.dotplot(adata,
-              marker_genes,
-              groupby="leiden",
-              save="_marker_dotplot.png")
+def group_max(adata: sc.AnnData, groupby: str) -> str:
+    import pandas as pd
+
+    agg = sc.get.aggregate(adata, by=groupby, func="mean")
+    return pd.Series(agg.layers["mean"].sum(1), agg.obs[groupby]).idxmax()
+sc.pl.dotplot(adata, marker_genes, groupby="leiden_res0_02")
+sc.pl.dotplot(adata, marker_genes, groupby="leiden_res0_5")
+
 ```
+<img width="2227" height="748" alt="dabang" src="https://github.com/user-attachments/assets/615ecb63-2815-4116-8a6d-113ce255891a" />
 
 ---
 
 ## 🔹 2. Automatic Annotation (CellTypist)
-
-### Explanation
 
 Uses machine learning to predict cell types.
 
@@ -313,25 +280,44 @@ predictions = ct.annotate(
 )
 
 adata = predictions.to_adata()
+sc.pl.umap(adata, color="majority_voting", ncols=1)
 ```
+<img width="625" height="376" alt="dabang2" src="https://github.com/user-attachments/assets/875308d6-6999-43af-851d-0abc6c872747" />
 
 ---
 
 ## 🔹 3. Enrichment-Based Annotation (Decoupler)
-
-### Explanation
 
 Uses marker databases (PanglaoDB) to infer cell identity.
 
 ```python
 import decoupler as dc
 
+# 1. Fetch
 markers = dc.get_resource("PanglaoDB")
 
-dc.run_mlm(
-    adata,
-    net=markers.rename(columns=dict(cell_type="source", genesymbol="target")),
-    weight=None
+# 2. Debug: Look for the column that specifies Human vs Mouse
+# Common columns are 'taxon', 'ncbitaxonid', 'species', or 'organism'
+possible_org_cols = ['taxon', 'ncbitaxonid', 'species', 'organism']
+org_col = next((c for c in possible_org_cols if c in markers.columns), None)
+
+if org_col:
+    # Filter for Human (Taxon 9606 or name 'human')
+    is_human = markers[org_col].astype(str).str.lower().isin(['human', '9606', 'hsapiens'])
+    
+    # Check for canonical markers - if column missing, skip this filter
+    if "canonical_marker" in markers.columns:
+        markers = markers[is_human & (markers["canonical_marker"])]
+    else:
+        markers = markers[is_human]
+else:
+    print("Could not find an organism column. Columns present are:", markers.columns.tolist())
+
+# 3. Deduplicate (PanglaoDB uses 'genesymbol' or 'target' for the gene name)
+gene_col = 'genesymbol' if 'genesymbol' in markers.columns else 'target'
+markers = markers[~markers.duplicated(["cell_type", gene_col])]
+
+markers.head()
 )
 ```
 
@@ -339,26 +325,26 @@ dc.run_mlm(
 
 # 🧪 Differential Expression Analysis
 
-## 🔹 Explanation
-
 Identifies genes that distinguish clusters.
 
 ```python
 sc.tl.rank_genes_groups(adata, groupby="leiden")
-sc.pl.rank_genes_groups_dotplot(adata, n_genes=5, save="_deg.png")
+sc.tl.filter_rank_genes_groups(adata, min_fold_change=1.5)
+sc.pl.rank_genes_groups_dotplot(adata, groupby="leiden_res0_5", standard_scale="var", n_genes=5)
 ```
+<img width="2840" height="683" alt="degs" src="https://github.com/user-attachments/assets/a4ca65c8-3f6b-430d-a416-f8ec6cd094c2" />
+
 
 ---
 
 # 📊 Final Results Visualization
 
 ```python
-sc.pl.umap(
-    adata,
-    color=["leiden", "majority_voting"],
-    save="_final_annotation.png"
+cluster3_genes = ["LYZ", "ACTB", "S100A6", "S100A4", "CST3"]
+sc.pl.umap(adata, color=[*cluster3_genes, "leiden_res0_5"], legend_loc="on data", frameon=False, ncols=3)
 )
 ```
+<img width="1179" height="710" alt="final" src="https://github.com/user-attachments/assets/39f0ae7b-e4d3-4cb4-b289-148046b287f1" />
 
 ---
 
