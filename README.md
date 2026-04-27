@@ -170,25 +170,19 @@ STAR alignment summary showing high mapping efficiency and successful alignment 
 
 ## 🔹 Barcode and Gene Detection
 
-- Total detected barcodes: 5200  
-- Gene expression varies across cells, as expected in scRNA-seq data.
 <img width="300" height="200" alt="Barcode" src="https://github.com/user-attachments/assets/951d2af4-05d8-4a34-ade3-eb383e153402" />
-Distribution of barcode counts across droplets showing separation between real cells and empty droplets.
+Barcodes represent unique cell identifiers used to assign sequencing reads to individual cells.
 
 ---
 
 <img width="300" height="200" alt="Genes" src="https://github.com/user-attachments/assets/3c3419e2-84e0-4d48-84b1-7b67f41607c4" />
-Gene detection per cell showing variability in gene expression across barcodes.
-
+The genes.tsv file contains gene identifiers and names used to map expression counts in the matrix.
 ---
 
 ## 🔹 Expression Matrix Characteristics
 
-The gene expression matrix is highly sparse, with most values being zero.  
-This is a normal characteristic of single-cell RNA-seq datasets.
-
+The matrix.mtx file stores sparse gene expression counts, where each entry represents the number of transcripts of a gene detected in a specific cell
 <img width="333" height="193" alt="Matrix count" src="https://github.com/user-attachments/assets/8ed3e95b-809d-4901-bcf9-ef2f7bbaecb8" />
-UMI count distribution across gene expression matrix highlighting sparsity typical of scRNA-seq data.
 
 ---
 
