@@ -26,18 +26,6 @@ This project demonstrates a **complete single-cell RNA sequencing (scRNA-seq) an
 
 ---
 
-# 📁 Project Structure
-
-```
-📦 scRNAseq-analysis
- ┣ 📂 data/              # Raw input data
- ┣ 📂 figures/           # All generated plots
- ┣ 📜 analysis.ipynb     # Main analysis notebook
- ┣ 📜 requirements.txt
- ┗ 📜 README.md
-```
-
----
 
 # ⚙️ Installation
 
@@ -415,4 +403,3 @@ This pipeline successfully:
 * Pathway analysis
 * Multi-omics integration
 
----
