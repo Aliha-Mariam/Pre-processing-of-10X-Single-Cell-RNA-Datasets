@@ -12,7 +12,7 @@ This project demonstrates a **complete single-cell RNA sequencing (scRNA-seq) an
 * **Total Cells**: 8,785
 * **Total Genes**: 36,601
 
-## 🎯 Objectives
+## Objectives
 
 * Perform quality control and filtering
 * Detect and remove doublets
@@ -66,14 +66,12 @@ adatas = {k: download_sample(k, v) for k, v in samples.items()}
 adata = ad.concat(adatas, label="sample")
 adata.obs_names_make_unique()
 ```
+This function downloads each sample securely using hash verification and loads it into AnnData format. It also ensures gene names are unique to avoid downstream conflicts.Multiple samples are downloaded and merged into a single AnnData object. Each cell is labeled by sample origin, and duplicate cell IDs are corrected for consistency.
 
-## ⚠️ Notes
-
-* Duplicate gene names and cell IDs are corrected to avoid downstream errors
 
 ---
 
-# 🧪 Quality Control (QC)
+#  Quality Control (QC)
 
 Quality control ensures removal of **low-quality or damaged cells**.
 
@@ -93,6 +91,8 @@ adata.var["hb"] = adata.var_names.str.contains("^HB[^(P)]")
 sc.pp.calculate_qc_metrics(adata, qc_vars=["mt", "ribo", "hb"], inplace=True, log1p=True)
 sc.pl.violin(adata, ["n_genes_by_counts", "total_counts", "pct_counts_mt"], jitter=0.4, multi_panel=True)
 ```
+Violin plots visualize distributions of QC metrics across cells, helping detect outliers and poor-quality cells.
+
 ---
 <img width="1502" height="476" alt="pct" src="https://github.com/user-attachments/assets/3c2a622d-eb5d-4fc6-ab42-0efba4a22fcf" />
 
@@ -100,7 +100,10 @@ sc.pl.violin(adata, ["n_genes_by_counts", "total_counts", "pct_counts_mt"], jitt
 ```python
 sc.pl.scatter(adata, "total_counts", "n_genes_by_counts", color="pct_counts_mt")
 ```
+
 <img width="428" height="401" alt="pct2" src="https://github.com/user-attachments/assets/f84bf9cb-1e99-4117-9d30-d9b0df5adbc6" />
+
+This scatter plot shows relationship between sequencing depth and gene diversity, with mitochondrial percentage indicating cell health.
 
 ---
 
@@ -120,7 +123,7 @@ sc.pp.filter_genes(adata, min_cells=3)
 
 ---
 
-# ⚠️ Doublet Detection
+#  Doublet Detection
 
 Doublets = two cells captured as one → leads to incorrect clustering.
 
@@ -138,7 +141,7 @@ adata = adata[~adata.obs["predicted_doublet"]].copy()
 
 ---
 
-# 📊 Normalization
+#  Normalization
 
 * Normalizes sequencing depth across cells
 * Applies log transformation to stabilize variance
@@ -154,9 +157,7 @@ sc.pp.log1p(adata)
 
 ---
 
-# 🎯 Feature Selection
-
-Selects **highly variable genes (HVGs)** → most informative genes
+#  Feature Selection
 
 ## 🔹 Code
 
@@ -169,12 +170,12 @@ sc.pp.highly_variable_genes(
 sc.pl.highly_variable_genes(adata)
 ```
 <img width="725" height="377" alt="pct 3" src="https://github.com/user-attachments/assets/c586d4b5-bd7f-40e3-955b-7988cb929a41" />
+
 ---
 
+This step selects genes with the highest biological variation across cells, which are most informative for downstream analysis.
+
 # 📉 Dimensionality Reduction (PCA)
-
-Reduces high-dimensional gene space into principal components.
-
 ## 🔹 Code
 
 ```python
@@ -184,13 +185,14 @@ sc.pl.pca_variance_ratio(adata,
                          log=True,
                          save="_pca_variance.png")
 ```
+PCA reduces high-dimensional gene expression into principal components capturing major variance.
+This plot shows how much variance is explained by each principal component.
+
 <img width="374" height="404" alt="pct 4" src="https://github.com/user-attachments/assets/cf543132-1c01-41bf-ada7-58afff295ae9" />
 
 ---
 
 # 🌐 UMAP Visualization
-
-UMAP projects cells into 2D space preserving structure.
 
 ## 🔹 Code
 
@@ -203,11 +205,11 @@ sc.pl.umap(adata,
            save="_umap_sample.png")
 ```
 <img width="444" height="376" alt="umap" src="https://github.com/user-attachments/assets/7eb891b6-454f-4122-a2f7-2e6501abc792" />
-
+A neighborhood graph is constructed and projected into 2D space using UMAP to visualize cell relationships.This visualizes how cells cluster based on their sample origin.
 
 ---
 
-# 🔗 Clustering (Leiden)
+#  Clustering (Leiden)
 
 Groups cells into clusters based on similarity.
 
@@ -222,9 +224,11 @@ sc.pl.umap(adata,
 ```
 <img width="498" height="379" alt="clustering" src="https://github.com/user-attachments/assets/c9ada67a-e0d1-44b3-a88a-1af28ef84da0" />
 
+Clusters are visualized in UMAP space to identify distinct cell populations.
+
 ---
 
-# 🧬 Cell Type Annotation
+#  Cell Type Annotation
 
 ---
 
@@ -323,7 +327,7 @@ markers.head()
 
 ---
 
-# 🧪 Differential Expression Analysis
+# Differential Expression Analysis
 
 Identifies genes that distinguish clusters.
 
@@ -334,6 +338,7 @@ sc.pl.rank_genes_groups_dotplot(adata, groupby="leiden_res0_5", standard_scale="
 ```
 <img width="2840" height="683" alt="degs" src="https://github.com/user-attachments/assets/a4ca65c8-3f6b-430d-a416-f8ec6cd094c2" />
 
+Top marker genes per cluster are visualized using dot plots.
 
 ---
 
@@ -346,9 +351,11 @@ sc.pl.umap(adata, color=[*cluster3_genes, "leiden_res0_5"], legend_loc="on data"
 ```
 <img width="1179" height="710" alt="final" src="https://github.com/user-attachments/assets/39f0ae7b-e4d3-4cb4-b289-148046b287f1" />
 
+Final UMAP shows clearly separated biological clusters representing different immune cell populations.
+
 ---
 
-# ⚠️ Common Issues
+# Common Issues
 
 * Duplicate gene names → fixed
 * AnnData warnings → safe
@@ -357,7 +364,7 @@ sc.pl.umap(adata, color=[*cluster3_genes, "leiden_res0_5"], legend_loc="on data"
 
 ---
 
-# ✅ Key Results
+#  Key Results
 
 * High-quality dataset obtained
 * Doublets removed
@@ -372,7 +379,7 @@ sc.pl.umap(adata, color=[*cluster3_genes, "leiden_res0_5"], legend_loc="on data"
 
 ---
 
-# 🚀 Conclusion
+#  Conclusion
 
 This pipeline successfully:
 
@@ -382,7 +389,7 @@ This pipeline successfully:
 
 ---
 
-# 📌 Future Work
+#  Future Work
 
 * Batch correction
 * Sub-clustering
